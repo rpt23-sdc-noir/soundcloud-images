@@ -5,7 +5,7 @@
 ## Project API
 - GET /bands/get/:songId <-- returns band data using a song ID
 - POST /bands/create <-- path to create a band using data in the request object
-- PUT /bands/update/:bandId <-- update a band in the database (followers)
+- PUT /bands/followers <-- update follower count for a band in the database
 - DELETE /bands/delete/:bandId <-- delete a band in the database using a band ID
 
 ## Related Projects

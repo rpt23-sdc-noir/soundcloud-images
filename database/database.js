@@ -51,6 +51,15 @@ const findBand = function(id) {
     });
 };
 
+/* ----- DELETE ONE BAND ----- */
+
+const deleteBand = function(songId) {
+  return Band.deleteOne({songId})
+  .catch((err) => {
+    console.error('Error deleting band from database:', err);
+  })
+};
+
 // --------- DELETE BANDS FUNC --------- //
 
 const deleteBands = function() {
@@ -65,7 +74,7 @@ const deleteBands = function() {
 const updateFollowers = function(id, val) {
   return Band.updateOne({bandId: id}, {$inc: {followers: val * 1}})
     .catch((error) => {
-      console.log('Error updating followers', error);
+      console.log('Error updating followers:', error);
     });
 };
 
@@ -73,3 +82,4 @@ module.exports.saveBands = saveBands;
 module.exports.findBand = findBand;
 module.exports.deleteBands = deleteBands;
 module.exports.updateFollowers = updateFollowers;
+module.exports.deleteBand = deleteBand;
