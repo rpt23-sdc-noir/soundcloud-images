@@ -29,7 +29,7 @@ router.get('/get/:songId', async(req, res) => {
 
 /* ----- UPDATE FOLLOWERS ----- */
 
-router.post('/followers', (req, res) => {
+router.put('/followers', (req, res) => {
   const bandId = req.body.id;
   const value = req.body.value;
   db.updateFollowers(bandId, value)

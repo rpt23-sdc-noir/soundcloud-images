@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/bands', {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
+  useUnifiedTopology: false,
   useCreateIndex: true
 });
 

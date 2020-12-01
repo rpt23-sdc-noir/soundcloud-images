@@ -27,4 +27,7 @@ dist/
 # API
 config.js
 
+# Band data
+data.csv
+
 client/bundle.js
