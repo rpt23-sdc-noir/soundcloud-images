@@ -9,7 +9,8 @@
   },
   "scripts": {
     "csv": "node --max-old-space-size=8192 writeCSV.js",
-    "seed": "mongoimport --db bands --collection bands --type csv --headerline --ignoreBlanks --file data.csv",
+    "seedMongo": "mongoimport --db bands --collection bands --type csv --headerline --ignoreBlanks --file data.csv",
+    "seedPostgres": "psql < ./database/schema.sql",
     "build": "webpack --mode=development -d --watch",
     "prod": "webpack --mode=production -d --watch",
     "start": "nodemon server/server.js",
