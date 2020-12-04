@@ -5,10 +5,11 @@ CREATE DATABASE bands;
 \c bands;
 
 CREATE TABLE bands (
+  id SERIAL,
   band_id INT,
   song_id INT,
-  band_image_url VARCHAR(200),
-  band_name VARCHAR(100),
+  band_image_url VARCHAR(120),
+  band_name VARCHAR(50),
   followers INT,
   tracks INT
 );

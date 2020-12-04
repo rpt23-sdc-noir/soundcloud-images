@@ -1,85 +1,66 @@
-// ----------- DB CONNECTION ---------- //
 
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/bands', {
-  useNewUrlParser: true,
-  useUnifiedTopology: false,
-  useCreateIndex: true
-});
+const pass = require('../dbconfig.js');
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('Connected to MongoDB!');
-});
+const nano = require('nano')(`http://admin:${pass.password}@localhost:5984`);
+async function createDB() {
+  await nano.db.destroy('bands');
+  await nano.db.create('bands');
+  const bands = nano.use('bands');
+  const response = await bands.insert({happy: true}, 'rabbit');
+  console.log(response);
+  return response;
+}
+createDB();
 
-// ------------- DB SCHEMA ------------ //
+// // --------- SAVE BAND FUNC --------- //
 
-const bandSchema = new mongoose.Schema({
-  bandId: {
-    type: Number,
-    unique: true
-  },
-  songId: {
-    type: Number,
-    unique: true
-  },
-  bandName: String,
-  bandImageUrl: String,
-  followers: Number,
-  tracks: Number
-});
+// const saveBands = (bandData) => {
+//   var band = new Band(bandData);
+//   return band.save()
+//     .catch((error) => {
+//       console.log('Error saving to database: ', error);
+//     });
+// };
 
-const Band = mongoose.model('Band', bandSchema);
+// // --------- FIND BAND FUNC --------- //
 
-// --------- SAVE BAND FUNC --------- //
+// const findBand = function(id) {
+//   return Band.findOne({songId: id})
+//     .catch((error) => {
+//       console.log('Error finding band in database: ', error);
+//     });
+// };
 
-const saveBands = (bandData) => {
-  var band = new Band(bandData);
-  return band.save()
-    .catch((error) => {
-      console.log('Error saving to database: ', error);
-    });
-};
+// /* ----- DELETE ONE BAND ----- */
 
-// --------- FIND BAND FUNC --------- //
+// const deleteBand = function(songId) {
+//   return Band.deleteOne({songId})
+//   .catch((err) => {
+//     console.error('Error deleting band from database:', err);
+//   })
+// };
 
-const findBand = function(id) {
-  return Band.findOne({songId: id})
-    .catch((error) => {
-      console.log('Error finding band in database: ', error);
-    });
-};
+// // --------- DELETE BANDS FUNC --------- //
 
-/* ----- DELETE ONE BAND ----- */
+// const deleteBands = function() {
+//   return Band.deleteMany({})
+//     .catch((error) => {
+//       console.log('Error deleting bands in database: ', error);
+//     });
+// };
 
-const deleteBand = function(songId) {
-  return Band.deleteOne({songId})
-  .catch((err) => {
-    console.error('Error deleting band from database:', err);
-  })
-};
+// // ------ UPDATE FOLLOWERS FUNC ------- //
 
-// --------- DELETE BANDS FUNC --------- //
+// const updateFollowers = function(id, val) {
+//   return Band.updateOne({bandId: id}, {$inc: {followers: val * 1}})
+//     .catch((error) => {
+//       console.log('Error updating followers:', error);
+//     });
+// };
 
-const deleteBands = function() {
-  return Band.deleteMany({})
-    .catch((error) => {
-      console.log('Error deleting bands in database: ', error);
-    });
-};
+// module.exports.saveBands = saveBands;
+// module.exports.findBand = findBand;
+// module.exports.deleteBands = deleteBands;
+// module.exports.updateFollowers = updateFollowers;
+// module.exports.deleteBand = deleteBand;
 
-// ------ UPDATE FOLLOWERS FUNC ------- //
-
-const updateFollowers = function(id, val) {
-  return Band.updateOne({bandId: id}, {$inc: {followers: val * 1}})
-    .catch((error) => {
-      console.log('Error updating followers:', error);
-    });
-};
-
-module.exports.saveBands = saveBands;
-module.exports.findBand = findBand;
-module.exports.deleteBands = deleteBands;
-module.exports.updateFollowers = updateFollowers;
-module.exports.deleteBand = deleteBand;
