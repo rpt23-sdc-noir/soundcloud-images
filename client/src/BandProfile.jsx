@@ -50,7 +50,7 @@ class BandProfile extends React.Component {
     }, () => {
       // post request to server to update followers
 
-      axios.post('/followers', {
+      axios.post('/bands/followers', {
         id: bandId,
         value: this.state.isFollowed ? 1 : -1
       })
@@ -76,7 +76,7 @@ class BandProfile extends React.Component {
     let songId = splitUrl.filter(function(id) {
       return parseInt(id);
     });
-    axios.get(`/artistBio/${songId}`)
+    axios.get(`/bands/get/${songId}`)
       .then((response) => {
         this.updateBio(response.data.data);
       })

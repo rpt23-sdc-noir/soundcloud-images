@@ -24,7 +24,10 @@ coverage
 build/
 dist/
 
-# API
-config.js
+# CouchDB password
+dbconfig.js
+
+# Band data
+data.csv
 
 client/bundle.js
