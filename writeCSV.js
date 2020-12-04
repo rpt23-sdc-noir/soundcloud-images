@@ -10,10 +10,10 @@ const writeToCsvFile = async () => {
   writer.pipe(fs.createWriteStream('data.csv'));
   for (let i = 0; i < 10000000; i++) {
    await writer.write({
-      bandId: i + 1,
-      songId: i + 1,
-      bandImageUrl: bands.bandImages[getRandomNum(150)],
-      bandName: faker.vehicle.vehicle(),
+      band_id: i + 1,
+      song_id: i + 1,
+      band_image_url: bands.bandImages[getRandomNum(150)],
+      band_name: faker.vehicle.vehicle(),
       followers: getRandomNum(10000000),
       tracks: getRandomNum(2500000)
     })
