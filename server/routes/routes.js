@@ -1,26 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../database/database.js');
+const db = require('../../database/pg.js');
 
 /* ----- GET BAND DATA ----- */
 
 router.get('/get/:songId', async(req, res) => {
   try {
-    const band = await db.findBand(req.params.songId);
-    // if !band then error
-    if (!band) {
-      return res.status(400).json({
-        success: false,
-        msg: `there is no band with songId ${req.params.songId}`
-      });
-    }
-    res.status(200).send({
-      success: true,
-      data: band
-    });
+    const songId = req.params.songId;
+    const band = await db.findBandId(songId);
+    const bandId = band.rows[0]['band_id'];
+    const getBandData = await db.findBandData(bandId);
+    const bandData = JSON.stringify(getBandData.rows[0]);
+    res.setHeader('content-type', 'application/json');
+    res.send(bandData);
   } catch (error) {
     console.error(error);
-    res.status(400).json({
+    res.sendStatus(400).json({
       success: false,
       msg: error
     });
