@@ -36,8 +36,12 @@ const findBandData = async (bandId) => {
 
 const deleteSongItem = async (songId) => {
   try {
-    await client.query(`DELETE FROM songs WHERE song_id = ${songId}`);
-    return true;
+    const deleteSongItem = await client.query(`DELETE FROM songs WHERE song_id = ${songId}`);
+    if (deleteSongItem.rowCount === 1) {
+      return true;
+    } else {
+      return false;
+    }
   } catch(err) {
     console.log('Error deleting song item:', err);
   }
@@ -49,4 +53,8 @@ const start = async () => {
 };
 start();
 
-module.exports = { findBandId, findBandData };
+module.exports = {
+  findBandId,
+  findBandData,
+  deleteSongItem
+};
