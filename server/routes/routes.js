@@ -17,25 +17,36 @@ router.get('/get/:songId', async (req, res) => {
     console.error(err);
     res.sendStatus(400).json({
       success: false,
-      msg: err
+      msg: err,
     });
   }
 });
 
 /* ----- UPDATE FOLLOWERS ----- */
 
-// router.put('/followers', (req, res) => {
-//   const bandId = req.body.id;
-//   const value = req.body.value;
-//   db.updateFollowers(bandId, value)
-//     .then((response) => {
-//       res.send(response);
-//     })
-//     .catch((error) => {
-//       console.log('Error updating followers: ', error);
-//       res.sendStatus(500);
-//     })
-// });
+router.put('/followers', async (req, res) => {
+  try {
+    const { query } = req;
+    let bandId;
+    let followerCount;
+    for (let val in query) {
+      bandId = val;
+      followerCount = query[val];
+    }
+    const updateBandFollowers = await db.updateFollowers(bandId, followerCount);
+    if (updateBandFollowers === true) {
+      res.send(`Successfully updated followers for band ID: ${bandId}!`);
+    } else {
+      res.status(500).send(`Error updating followers for band ID: ${bandId}, hang tight while we fix it.`);
+    }
+  } catch(err) {
+    console.error(err);
+    res.sendStatus(400).json({
+      success: false,
+      msg: err,
+    })
+  }
+});
 
 /* DELETE SONG */
 
@@ -52,7 +63,7 @@ router.delete('/delete/:songId', async (req, res) => {
     console.error(err);
     res.sendStatus(400).json({
       success: false,
-      msg: err
+      msg: err,
     })
   }
 });

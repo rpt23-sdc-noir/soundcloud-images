@@ -32,6 +32,19 @@ const findBandData = async (bandId) => {
   } catch(err) {
     console.log('Error getting band data:', err);
   }
+};
+
+const updateFollowers = async (id, value) => {
+  try {
+    const updatedFollowers = await client.query(`UPDATE bands SET followers = ${value} WHERE band_id = ${id}`);
+    if (updatedFollowers.rowCount === 1) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch(err) {
+    console.log('Error updating band followers:', err);
+  }
 }
 
 const deleteSongItem = async (songId) => {
@@ -45,7 +58,7 @@ const deleteSongItem = async (songId) => {
   } catch(err) {
     console.log('Error deleting song item:', err);
   }
-}
+};
 
 const start = async () => {
   await connect();
@@ -56,5 +69,6 @@ start();
 module.exports = {
   findBandId,
   findBandData,
-  deleteSongItem
+  deleteSongItem,
+  updateFollowers,
 };
