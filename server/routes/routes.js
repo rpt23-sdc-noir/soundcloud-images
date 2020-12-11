@@ -8,11 +8,15 @@ router.get('/get/:songId', async (req, res) => {
   try {
     const { songId } = req.params;
     const band = await db.findBandId(songId);
-    const bandId = band.rows[0]['band_id'];
-    const getBandData = await db.findBandData(bandId);
-    const bandData = JSON.stringify(getBandData.rows[0]);
-    res.setHeader('content-type', 'application/json');
-    res.send(bandData);
+    if (band) {
+      const bandId = band.rows[0]['band_id'];
+      const getBandData = await db.findBandData(bandId);
+      const bandData = JSON.stringify(getBandData.rows[0]);
+      res.setHeader('content-type', 'application/json');
+      res.send(bandData);
+    } else {
+      res.status(500).send('Error retrieving band data, hang tight while we work to fix it.');
+    }
   } catch (err) {
     console.error(err);
     res.sendStatus(400).json({
@@ -70,15 +74,32 @@ router.delete('/delete/:songId', async (req, res) => {
 
 /* CREATE SONG ITEM */
 
-// router.post('/create', (req, res) => {
-//   const bandData = req.body;
-//   db.saveBands(bandData)
-//   .then((response) => {
-//     res.send(response);
-//   })
-//   .catch((err) => {
-//     console.error('Error saving band:', err);
-//   })
-// });
+router.post('/create', async (req, res) => {
+  try {
+    const bandData = req.query;
+    const {
+      bandId,
+      songId,
+      songName,
+      bandName,
+      bandImageUrl,
+      followers,
+      tracks,
+    } = bandData;
+    const createBand = await db.createBandEntry(bandId, songId, songName, bandName, bandImageUrl, followers, tracks);
+    if (createBand) {
+      res.setHeader('content-type', 'application/json');
+      res.status(200).send(JSON.stringify(bandData));
+    } else {
+      res.status(500).send('Error saving band, hang tight while we work to fix it.');
+    }
+  } catch(err) {
+    console.error(err);
+    res.sendStatus(400).json({
+      success: false,
+      msg: err,
+    })
+  }
+});
 
 module.exports = router;

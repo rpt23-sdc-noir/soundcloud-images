@@ -28,6 +28,6 @@ dist/
 dbconfig.js
 
 # Band data
-data.csv
+*.csv
 
 client/bundle.js

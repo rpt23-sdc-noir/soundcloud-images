@@ -9,9 +9,7 @@
   },
   "scripts": {
     "csv": "node --max-old-space-size=8192 writeCSV.js",
-    "seedMongo": "mongoimport --db bands --collection bands --type csv --headerline --ignoreBlanks --file data.csv",
     "seedPostgres": "psql < ./database/schema.sql",
-    "seedCouch": "cat data.csv | couchimport --url http://admin:Kingdesu8@localhost:5984 --db bands",
     "build": "webpack --mode=development -d --watch",
     "prod": "webpack --mode=production -d --watch",
     "start": "nodemon server/server.js",
@@ -42,6 +40,7 @@
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.4",
     "path": "^0.12.7",
+    "pg": "^8.5.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^3.11.0",
