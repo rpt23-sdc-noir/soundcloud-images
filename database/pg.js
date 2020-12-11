@@ -39,7 +39,8 @@ const createBandEntry = async (...args) => {
 const findBandId = async (songId) => {
   try {
     const bandId = await client.query(`SELECT band_id FROM songs WHERE song_id = ${songId}`);
-    return bandId.rowCount === 1 ? true : false;
+    console.log(bandId);
+    return bandId.rowCount === 1 ? bandId.rows[0]['band_id'] : false;
   } catch(err) {
     console.log('Error getting band ID:', err);
   }

@@ -4,25 +4,36 @@ const db = require('../../database/pg.js');
 
 /* ----- GET BAND DATA ----- */
 
+const validateID = (id) => {
+  if (!(id < 0) && !(id > 10000000)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 router.get('/get/:songId', async (req, res) => {
-  try {
-    const { songId } = req.params;
-    const band = await db.findBandId(songId);
-    if (band) {
-      const bandId = band.rows[0]['band_id'];
-      const getBandData = await db.findBandData(bandId);
-      const bandData = JSON.stringify(getBandData.rows[0]);
-      res.setHeader('content-type', 'application/json');
-      res.send(bandData);
-    } else {
-      res.status(500).send('Error retrieving band data, hang tight while we work to fix it.');
+  const { songId } = req.params;
+  if (songId && validateID(songId)) {
+    try {
+      const bandId = await db.findBandId(songId);
+      if (bandId !== false) {
+        const getBandData = await db.findBandData(bandId);
+        const bandData = JSON.stringify(getBandData.rows[0]);
+        res.setHeader('content-type', 'application/json');
+        res.send(bandData);
+      } else {
+        res.status(500).send('Error retrieving band data, hang tight while we work to fix it.');
+      }
+    } catch (err) {
+      console.error(err);
+      res.sendStatus(400).json({
+        success: false,
+        msg: err,
+      });
     }
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(400).json({
-      success: false,
-      msg: err,
-    });
+  } else {
+    res.status(400).send('Please enter a valid song ID.');
   }
 });
 
@@ -37,11 +48,15 @@ router.put('/followers', async (req, res) => {
       bandId = val;
       followerCount = query[val];
     }
-    const updateBandFollowers = await db.updateFollowers(bandId, followerCount);
-    if (updateBandFollowers === true) {
-      res.send(`Successfully updated followers for band ID: ${bandId}!`);
+    if (bandId && validateID(bandId)) {
+      const updateBandFollowers = await db.updateFollowers(bandId, followerCount);
+      if (updateBandFollowers === true) {
+        res.send(`Successfully updated followers for band ID: ${bandId}!`);
+      } else {
+        res.status(500).send(`Error updating followers for band ID: ${bandId}, hang tight while we fix it.`);
+      }
     } else {
-      res.status(500).send(`Error updating followers for band ID: ${bandId}, hang tight while we fix it.`);
+      res.status(400).send('Please enter a valid band ID.');
     }
   } catch(err) {
     console.error(err);
@@ -55,20 +70,24 @@ router.put('/followers', async (req, res) => {
 /* DELETE SONG */
 
 router.delete('/delete/:songId', async (req, res) => {
-  try {
-    const { songId } = req.params;
-    const deleteSong = await db.deleteSongItem(songId);
-    if (deleteSong === true) {
-      res.send('Successfully deleted song item!');
-    } else {
-      res.status(500).send('Error deleting song item, hang tight while we work to fix it.');
+  const { songId } = req.params;
+  if (songId && validateID(songId)) {
+    try {
+      const deleteSong = await db.deleteSongItem(songId);
+      if (deleteSong === true) {
+        res.send('Successfully deleted song item!');
+      } else {
+        res.status(500).send('Error deleting song item, hang tight while we work to fix it.');
+      }
+    } catch(err) {
+      console.error(err);
+      res.sendStatus(400).json({
+        success: false,
+        msg: err,
+      })
     }
-  } catch(err) {
-    console.error(err);
-    res.sendStatus(400).json({
-      success: false,
-      msg: err,
-    })
+  } else {
+    res.status(400).send('Please enter a valid song ID.');
   }
 });
 
@@ -86,12 +105,16 @@ router.post('/create', async (req, res) => {
       followers,
       tracks,
     } = bandData;
-    const createBand = await db.createBandEntry(bandId, songId, songName, bandName, bandImageUrl, followers, tracks);
-    if (createBand) {
-      res.setHeader('content-type', 'application/json');
-      res.status(200).send(JSON.stringify(bandData));
+    if (bandId && validateID(bandId) && songId && validateID(songId) && songName && bandName && bandImageUrl) {
+      const createBand = await db.createBandEntry(bandId, songId, songName, bandName, bandImageUrl, followers, tracks);
+      if (createBand) {
+        res.setHeader('content-type', 'application/json');
+        res.status(200).send(JSON.stringify(bandData));
+      } else {
+        res.status(500).send('Error saving band, hang tight while we work to fix it.');
+      }
     } else {
-      res.status(500).send('Error saving band, hang tight while we work to fix it.');
+      res.status(400).send('Please enter valid band properties.');
     }
   } catch(err) {
     console.error(err);

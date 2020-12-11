@@ -20,6 +20,10 @@ FROM '/Users/freddieperez-cruz/RPT-23-SDC/soundcloud-images/csv/data.csv'
 DELIMITER ','
 CSV HEADER;
 
+DROP TABLE IF EXISTS bands CASCADE;
+DROP TABLE IF EXISTS songs CASCADE;
+DROP TABLE IF EXISTS images CASCADE;
+
 CREATE TABLE bands (
   id SERIAL,
   band_id INT NOT NULL UNIQUE,
