@@ -30,4 +30,10 @@ dbconfig.js
 # Band data
 *.csv
 
+#Env file
+.env
+
+#New Relic
+newrelic.js
+
 client/bundle.js
