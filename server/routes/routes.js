@@ -16,12 +16,14 @@ router.get('/get/:songId', async (req, res) => {
   const { songId } = req.params;
   if (songId && validateID(songId)) {
     try {
-      const bandId = await db.findBandId(songId);
-      if (bandId !== false) {
-        const getBandData = await db.findBandData(bandId);
-        const bandData = JSON.stringify(getBandData.rows[0]);
+      const bandIdAndSongName = await db.findBandId(songId);
+      const getBandData = await db.findBandData(bandIdAndSongName.band_id);
+      const getBandImage = await db.getBandImage(bandIdAndSongName.band_id);
+      if (bandIdAndSongName !== false && getBandData !== false && getBandImage !== false) {
+        let allData = Object.assign(req.params, bandIdAndSongName, getBandData, getBandImage);
+        const bandData = JSON.stringify(allData);
         res.setHeader('content-type', 'application/json');
-        res.send(bandData);
+        res.send(allData);
       } else {
         res.status(500).send('Error retrieving band data, hang tight while we work to fix it.');
       }
