@@ -38,8 +38,8 @@ const createBandEntry = async (...args) => {
 
 const findBandId = async (songId) => {
   try {
-    const bandId = await client.query(`SELECT band_id FROM songs WHERE song_id = ${songId}`);
-    return bandId.rowCount === 1 ? bandId.rows[0]['band_id'] : false;
+    const bandIdAndSongName = await client.query(`SELECT band_id, song_name FROM songs WHERE id = ${songId}`);
+    return bandIdAndSongName.rowCount === 1 ? bandIdAndSongName.rows[0] : false;
   } catch(err) {
     console.log('Error getting band ID:', err);
   }
@@ -47,8 +47,8 @@ const findBandId = async (songId) => {
 
 const findBandData = async (bandId) => {
   try {
-    const bandData = await client.query(`SELECT * FROM bands WHERE band_id = ${bandId}`);
-    return bandData;
+    const bandData = await client.query(`SELECT * FROM bands WHERE id = ${bandId}`);
+    return bandData.rowCount === 1 ? bandData.rows[0] : false;
   } catch(err) {
     console.log('Error getting band data:', err);
   }
@@ -56,16 +56,25 @@ const findBandData = async (bandId) => {
 
 const updateFollowers = async (id, value) => {
   try {
-    const updatedFollowers = await client.query(`UPDATE bands SET followers = ${value} WHERE band_id = ${id}`);
+    const updatedFollowers = await client.query(`UPDATE bands SET followers = ${value} WHERE id = ${id}`);
     return updatedFollowers.rowCount === 1 ? true: false;
   } catch(err) {
     console.log('Error updating band followers:', err);
   }
-}
+};
+
+const getBandImage = async (bandId) => {
+  try {
+    const bandImage = await client.query(`SELECT band_image_url FROM images WHERE id = ${bandId}`);
+    return bandImage.rowCount === 1 ? bandImage.rows[0] : false;
+  } catch(err) {
+    console.log('Error getting band image:', err);
+  }
+};
 
 const deleteSongItem = async (songId) => {
   try {
-    const deleteSongItem = await client.query(`DELETE FROM songs WHERE song_id = ${songId}`);
+    const deleteSongItem = await client.query(`DELETE FROM songs WHERE id = ${songId}`);
     return deleteSongItem.rowCount === 1 ? true: false;
   } catch(err) {
     console.log('Error deleting song item:', err);
@@ -84,4 +93,5 @@ module.exports = {
   findBandData,
   deleteSongItem,
   updateFollowers,
+  getBandImage,
 };
