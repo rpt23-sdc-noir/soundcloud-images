@@ -31,7 +31,6 @@ class BandProfile extends React.Component {
   }
 
   updateBio(data) {
-    console.log('Data from GET request: ', data);
     this.setState({
       bandId: data.band_id,
       songId: data.songId,
@@ -78,8 +77,6 @@ class BandProfile extends React.Component {
     });
     axios.get(`/bands/get/${songId}`)
       .then((response) => {
-        console.log('response from  axios:', response);
-        // test comment
         this.updateBio(response.data);
       })
       .catch((error) => {

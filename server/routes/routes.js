@@ -7,10 +7,9 @@ const db = require('../../database/pg.js');
 const validateID = (id) => {
   if (!(id < 0) && !(id > 10000000)) {
     return true;
-  } else {
-    return false;
   }
-}
+  return false;
+};
 
 router.get('/get/:songId', async (req, res) => {
   const { songId } = req.params;
