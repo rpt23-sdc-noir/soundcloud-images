@@ -31,12 +31,11 @@ class BandProfile extends React.Component {
   }
 
   updateBio(data) {
-    console.log('Data from GET request: ', data);
     this.setState({
-      bandId: data.bandId,
+      bandId: data.band_id,
       songId: data.songId,
-      bandName: data.bandName,
-      bandImageUrl: data.bandImageUrl,
+      bandName: data.band_name,
+      bandImageUrl: data.band_image_url,
       followers: data.followers,
       tracks: data.tracks,
       isFollowed: false
@@ -78,7 +77,7 @@ class BandProfile extends React.Component {
     });
     axios.get(`/bands/get/${songId}`)
       .then((response) => {
-        this.updateBio(response.data.data);
+        this.updateBio(response.data);
       })
       .catch((error) => {
         console.log('Error setting initial state: ', error);
