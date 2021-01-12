@@ -22,7 +22,7 @@ export let options = {
 };
 
 export default function () {
-  const randomId = Math.floor(Math.random() * 10000000);
+  const randomId = Math.floor(Math.random() * (10000000 - 8000000 + 1) + 8000000);
   const res = http.get(`http://127.0.0.1:2000/bands/get/${randomId}`);
   const result = check(res, {'status was 200': (r) => r.status == 200});
   failRate.add(!result);
