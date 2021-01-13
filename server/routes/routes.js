@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../database/pg.js');
+const redis = require('redis');
+
+const client = redis.createClient(process.env.REDIS_PORT);
 
 /* ----- GET BAND DATA ----- */
 
@@ -11,32 +14,44 @@ const validateID = (id) => {
   return false;
 };
 
-router.get('/get/:songId', async (req, res) => {
+router.get('/get/:songId', async (req, res, next) => {
   const { songId } = req.params;
-  if (songId && validateID(songId)) {
-    try {
-      const bandIdAndSongName = await db.findBandId(songId);
-      const getBandData = await db.findBandData(bandIdAndSongName.band_id);
-      const getBandImage = await db.getBandImage(bandIdAndSongName.band_id);
-      if (bandIdAndSongName !== false && getBandData !== false && getBandImage !== false) {
-        let allData = Object.assign(req.params, bandIdAndSongName, getBandData, getBandImage);
-        const bandData = JSON.stringify(allData);
-        res.setHeader('content-type', 'application/json');
-        res.send(allData);
-      } else {
-        res.status(500).send('Error retrieving band data, hang tight while we work to fix it.');
-      }
-    } catch (err) {
-      console.error(err);
-      res.sendStatus(400).json({
-        success: false,
-        msg: err,
-      });
+  client.get(`${songId}`, (err, data) => { // check Redis cache
+    if (err) {
+      console.log(err);
+    } else if (data !== null) {
+      console.log('data from redis:', data);
+      res.send(data);
+    } else {
+      next();
     }
-  } else {
-    res.status(400).send('Please enter a valid song ID.');
-  }
-});
+  })}, async (req, res) => { // if not in cache run queries
+    const { songId } = req.params;
+    if (songId && validateID(songId)) {
+      try {
+        const bandIdAndSongName = await db.findBandId(songId);
+        const getBandData = await db.findBandData(bandIdAndSongName.band_id);
+        const getBandImage = await db.getBandImage(bandIdAndSongName.band_id);
+        if (bandIdAndSongName !== false && getBandData !== false && getBandImage !== false) {
+          let allData = Object.assign(req.params, bandIdAndSongName, getBandData, getBandImage);
+          const bandData = JSON.stringify(allData);
+          client.set(`${songId}`, bandData);
+          res.setHeader('content-type', 'application/json');
+          res.send(allData);
+        } else {
+          res.status(500).send('Error retrieving band data, hang tight while we work to fix it.');
+        }
+      } catch (err) {
+        console.error(err);
+        res.sendStatus(400).json({
+          success: false,
+          msg: err,
+        });
+      }
+    } else {
+      res.status(400).send('Please enter a valid song ID.');
+    }
+  })
 
 /* ----- UPDATE FOLLOWERS ----- */
 
